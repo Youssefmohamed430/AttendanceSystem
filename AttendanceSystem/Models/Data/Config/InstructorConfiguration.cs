@@ -10,23 +10,10 @@ namespace AttendanceSystem.Models.Data.Config
         {
             builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.Name)
-                   .HasMaxLength(255)
-                   .IsRequired();
-
-            builder.ToTable(t =>
-            {
-                t.HasCheckConstraint("CK_Instructors_Name_Length", "LEN(Name) >= 3");
-            });
-
-            builder.Property(x => x.Email)
-                .HasMaxLength(255)
-                .IsRequired();
-
-            builder.ToTable(t =>
-            {
-                t.HasCheckConstraint("CK_Instructors_Email_Format", "Email LIKE '%@%'");
-            });
+            builder.HasOne(u => u.User)
+                .WithOne(i => i.instructor)
+                .HasForeignKey<Instructor>(x => x.Id)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Property(r => r.Role)
                    .HasMaxLength(255)
