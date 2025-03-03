@@ -10,10 +10,6 @@ namespace AttendanceSystem.Models.Data.Config
         {
             builder.HasKey(x => x.Id);
 
-            builder.Property(r => r.Role)
-                .HasMaxLength(255)
-                .IsRequired();
-
             builder.HasOne(a => a.User)
                    .WithOne(s => s.student)
                    .HasForeignKey<Student>(s => s.Id)

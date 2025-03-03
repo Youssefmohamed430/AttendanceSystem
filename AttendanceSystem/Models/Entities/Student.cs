@@ -5,7 +5,7 @@ namespace AttendanceSystem.Models.Entities
 {
     public class Student 
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         [Required]
         public ApplicationUser? User { get; set; }
         public List<Attendance>? Attendances { get; set; }

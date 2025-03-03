@@ -15,10 +15,6 @@ namespace AttendanceSystem.Models.Data.Config
                 .HasForeignKey<Instructor>(x => x.Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Property(r => r.Role)
-                   .HasMaxLength(255)
-                   .IsRequired();
-
             builder.ToTable("Instructors");
         }
     }

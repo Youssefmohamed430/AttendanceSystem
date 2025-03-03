@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public required string Name { get; set; }
-        public required int InstId { get; set; }
+        public required string InstId { get; set; }
         public  List<Enrolllment>? Enrolllments { get; set; }
         public Instructor? instructor { get; set; }
     }
