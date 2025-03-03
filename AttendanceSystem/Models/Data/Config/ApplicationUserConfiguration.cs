@@ -24,6 +24,9 @@ namespace AttendanceSystem.Models.Data.Config
                    .HasMaxLength(255)
                    .IsRequired();
 
+            builder.Property(x => x.PhoneNumber)
+                .IsRequired(false);
+
 
             builder.ToTable("Users", t =>
             {

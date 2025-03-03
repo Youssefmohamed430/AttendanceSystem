@@ -15,6 +15,11 @@ namespace AttendanceSystem.Models.Data.Config
                 .HasForeignKey<Instructor>(x => x.Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasOne(x => x.course)
+                .WithOne(x => x.instructor)
+                .HasForeignKey<Instructor>(x => x.CrsId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.ToTable("Instructors");
         }
     }

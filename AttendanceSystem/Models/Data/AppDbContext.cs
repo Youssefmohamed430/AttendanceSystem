@@ -12,17 +12,8 @@ namespace AttendanceSystem.Models.Data
         public DbSet<Course> Courses { get; set; }
         public DbSet<Enrolllment> Enrolllments { get; set; }
         public DbSet<Attendance> Attendances { get; set; }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-            base.OnConfiguring(optionsBuilder);
-
-            var config = new ConfigurationBuilder()
-             .AddJsonFile("appsettings.json")
-             .Build();
-
-            var connectionString = config.GetSection("constr").Value;
-
-            optionsBuilder.UseSqlServer(connectionString);
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

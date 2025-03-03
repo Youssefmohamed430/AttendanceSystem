@@ -1,14 +1,47 @@
 using AttendanceSystem.Models.Data;
 using AttendanceSystem.Models.Entities;
+using AttendanceSystem.Models.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddIdentity<ApplicationUser,IdentityRole>()
-    .AddEntityFrameworkStores<AppDbContext>();
+var config = new ConfigurationBuilder()
+             .AddJsonFile("appsettings.json")
+             .Build();
+
+var connectionString = config.GetSection("constr").Value;
+
+builder.Services.AddDbContextPool<AppDbContext>(options =>
+    options.UseSqlServer(connectionString)
+);
+
+builder.Services.AddIdentity<ApplicationUser,IdentityRole>(options =>
+{
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireDigit = false;
+}).AddEntityFrameworkStores<AppDbContext>();
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+// Configure cookies
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/LogInForm";
+    options.LogoutPath = "/Account/SignOut";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+});
+
+builder.Services.AddScoped(typeof(IRepositery<>),typeof(Repositery<>));
 
 var app = builder.Build();
 

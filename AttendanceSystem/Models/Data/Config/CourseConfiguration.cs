@@ -13,12 +13,6 @@ namespace AttendanceSystem.Models.Data.Config
             builder.Property(x => x.Name)
                 .HasMaxLength(255)
                 .IsRequired();
-
-            builder.HasOne(x => x.instructor)
-                .WithOne(x =>x.course)
-                .HasForeignKey<Course>(x => x.InstId)    
-                .OnDelete(DeleteBehavior.Restrict);
-                
         }
     }
 }

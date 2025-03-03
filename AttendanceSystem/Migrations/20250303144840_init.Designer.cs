@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AttendanceSystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250302222947_inite")]
-    partial class inite
+    [Migration("20250303144840_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -68,7 +68,6 @@ namespace AttendanceSystem.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -141,19 +140,12 @@ namespace AttendanceSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("InstId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("InstId")
-                        .IsUnique();
 
                     b.ToTable("Courses");
                 });
@@ -182,7 +174,13 @@ namespace AttendanceSystem.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("CrsId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("CrsId")
+                        .IsUnique();
 
                     b.ToTable("Instructors", (string)null);
                 });
@@ -341,17 +339,6 @@ namespace AttendanceSystem.Migrations
                     b.Navigation("student");
                 });
 
-            modelBuilder.Entity("AttendanceSystem.Models.Entities.Course", b =>
-                {
-                    b.HasOne("AttendanceSystem.Models.Entities.Instructor", "instructor")
-                        .WithOne("course")
-                        .HasForeignKey("AttendanceSystem.Models.Entities.Course", "InstId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("instructor");
-                });
-
             modelBuilder.Entity("AttendanceSystem.Models.Entities.Enrolllment", b =>
                 {
                     b.HasOne("AttendanceSystem.Models.Entities.Course", "course")
@@ -373,6 +360,12 @@ namespace AttendanceSystem.Migrations
 
             modelBuilder.Entity("AttendanceSystem.Models.Entities.Instructor", b =>
                 {
+                    b.HasOne("AttendanceSystem.Models.Entities.Course", "course")
+                        .WithOne("instructor")
+                        .HasForeignKey("AttendanceSystem.Models.Entities.Instructor", "CrsId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("AttendanceSystem.Models.Entities.ApplicationUser", "User")
                         .WithOne("instructor")
                         .HasForeignKey("AttendanceSystem.Models.Entities.Instructor", "Id")
@@ -380,6 +373,8 @@ namespace AttendanceSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+
+                    b.Navigation("course");
                 });
 
             modelBuilder.Entity("AttendanceSystem.Models.Entities.Student", b =>
@@ -454,11 +449,8 @@ namespace AttendanceSystem.Migrations
             modelBuilder.Entity("AttendanceSystem.Models.Entities.Course", b =>
                 {
                     b.Navigation("Enrolllments");
-                });
 
-            modelBuilder.Entity("AttendanceSystem.Models.Entities.Instructor", b =>
-                {
-                    b.Navigation("course");
+                    b.Navigation("instructor");
                 });
 
             modelBuilder.Entity("AttendanceSystem.Models.Entities.Student", b =>
