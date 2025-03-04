@@ -38,7 +38,7 @@ namespace AttendanceSystem.Controllers
                     if (found)
                     {
                         await signInManager.SignInAsync(user, loginmodel.RememberMe);
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("AttendancePage", "Instructor");
                     }
                 }
                 ModelState.AddModelError("", "Username OR Password wrong");
@@ -80,7 +80,7 @@ namespace AttendanceSystem.Controllers
                     InstRepo.Save();
                     //Cookie 
                     await signInManager.SignInAsync(user,false);
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("AttendancePage", "Instructor");
                 }
                 foreach (var item in result.Errors)
                 {
