@@ -42,6 +42,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddScoped(typeof(IRepositery<>),typeof(Repositery<>));
+builder.Services.AddScoped(typeof(IInstructorRepository),typeof(InstructorRepositery));
 
 var app = builder.Build();
 
@@ -50,16 +51,22 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
+
 app.UseRouting();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseSession();
+
 app.MapStaticAssets();
+
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Instructor}/{action=AttendancePage}/{id?}");
+
 
 
 app.Run();

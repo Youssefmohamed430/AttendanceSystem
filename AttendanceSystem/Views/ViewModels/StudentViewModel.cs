@@ -22,8 +22,5 @@ namespace AttendanceSystem.Views.ViewModels
         [MinLength(10, ErrorMessage = "At Least ten Letters")]
         [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "password must contain only letters and numbers")]
         public string password { get; set; }
-        [Required]
-        [Compare("Password")]
-        public string Confirmpassword { get; set; }
     }
 }

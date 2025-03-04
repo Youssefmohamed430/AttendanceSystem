@@ -18,11 +18,19 @@ namespace AttendanceSystem.Models.Repositories
 
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            
+        }
+        public void Delete(string id)
+        {
+            var entity = GetById(id);
+            if(entity != null) dbSet.Remove(entity);
         }
 
         public List<T> GetAll()
             => dbSet.ToList();
+
+        public T? GetById(string id)
+            => dbSet.Find(id);
 
         public T GetById(int id)
         {

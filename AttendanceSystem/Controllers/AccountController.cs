@@ -38,6 +38,8 @@ namespace AttendanceSystem.Controllers
                     if (found)
                     {
                         await signInManager.SignInAsync(user, loginmodel.RememberMe);
+                        TempData["Instructor"] = user.Id;
+                        TempData.Keep("Instructor");
                         return RedirectToAction("AttendancePage", "Instructor");
                     }
                 }
@@ -79,7 +81,9 @@ namespace AttendanceSystem.Controllers
                     InstRepo.Add(instructor);
                     InstRepo.Save();
                     //Cookie 
-                    await signInManager.SignInAsync(user,false);
+                    await signInManager.SignInAsync(user, false);
+                    TempData["Instructor"] = instructor.Id ;
+                    TempData.Keep("Instructor");
                     return RedirectToAction("AttendancePage", "Instructor");
                 }
                 foreach (var item in result.Errors)
@@ -95,7 +99,7 @@ namespace AttendanceSystem.Controllers
 
             HttpContext.Session.Clear();
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("LogInForm", "Account");
         }
 
     }

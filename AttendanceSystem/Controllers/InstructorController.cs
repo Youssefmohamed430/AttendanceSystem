@@ -1,5 +1,7 @@
 ﻿using AttendanceSystem.Models.Entities;
 using AttendanceSystem.Models.Repositories;
+using AttendanceSystem.Views.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,23 +11,34 @@ namespace AttendanceSystem.Controllers
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
-        private readonly IRepositery<Instructor> InstRepo;
-        private readonly IRepositery<Course> crsRepo;
+        private readonly IInstructorRepository InstRepo;
+        private readonly IRepositery<Student> stuRepo;
+        private readonly IRepositery<Enrolllment> enrollmentrepo;
+        private readonly string? instructorId;
         public InstructorController
-            (IRepositery<Course> crsRepo, IRepositery<Instructor> InstRepo, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+            (IRepositery<Enrolllment> enrollmentrepo,IRepositery<Student> stuRepo,IInstructorRepository InstRepo, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.InstRepo = InstRepo;
-            this.crsRepo = crsRepo;
+            this.stuRepo = stuRepo;
+            this.enrollmentrepo = enrollmentrepo;
         }
+        [Authorize]
         public IActionResult AttendancePage()
         {
-            return View();
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("LogInForm", "Account");
+            }
+            string instructorId = TempData.Peek("Instructor")?.ToString();
+            var students = InstRepo.GetStudents(instructorId);
+            return View(students);
         }
-        public IActionResult GetInstructorStudents()
+        [Authorize]
+        public IActionResult AddStudentForm()
         {
-            return View();
+            return View();    
         }
     }
 }
