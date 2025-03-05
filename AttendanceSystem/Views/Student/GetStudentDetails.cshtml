@@ -1,0 +1,34 @@
+﻿@model List<ApplicationUser>
+@{
+    ViewData["Title"] = "StudentData";
+}
+
+<h1>Student Data</h1>
+
+<table class="table table-striped table-dark">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Email</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in Model)
+        {
+            <tr>
+                <th scope="row">@student.Name</th>
+                <td>@student.PhoneNumber</td>
+                <td>@student.Email</td>
+                <td>
+                    <a class="btn btn-outline-warning" asp-action="RemoveStudent" asp-controller="Student" role="button" asp-route-id="@student.Id" style="margin-right : 20px">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a class="btn btn-primary" asp-action="AddStudentForm" asp-controller="Instructor" role="button">Add student</a>
+
+
+

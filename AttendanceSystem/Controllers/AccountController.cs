@@ -38,9 +38,18 @@ namespace AttendanceSystem.Controllers
                     if (found)
                     {
                         await signInManager.SignInAsync(user, loginmodel.RememberMe);
-                        TempData["Instructor"] = user.Id;
-                        TempData.Keep("Instructor");
-                        return RedirectToAction("AttendancePage", "Instructor");
+                        if(User.IsInRole("Instructor"))
+                        {
+                            TempData["Instructor"] = user.Id;
+                            TempData.Keep("Instructor");
+                            return RedirectToAction("AttendancePage", "Instructor");
+                        }
+                        else
+                        {
+                            TempData["Student"] = user.Id;
+                            TempData.Keep("Student");
+                            return RedirectToAction("Index", "Home");
+                        }
                     }
                 }
                 ModelState.AddModelError("", "Username OR Password wrong");

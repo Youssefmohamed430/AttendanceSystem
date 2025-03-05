@@ -1,9 +1,11 @@
-﻿using AttendanceSystem.Models.Entities;
+﻿using AttendanceSystem.Models.Data;
+using AttendanceSystem.Models.Entities;
 using AttendanceSystem.Models.Repositories;
 using AttendanceSystem.Views.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AttendanceSystem.Controllers
 {
@@ -11,18 +13,14 @@ namespace AttendanceSystem.Controllers
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
-        private readonly IInstructorRepository InstRepo;
-        private readonly IRepositery<Student> stuRepo;
-        private readonly IRepositery<Enrolllment> enrollmentrepo;
-        private readonly string? instructorId;
+        private readonly AppDbContext context;
+
         public InstructorController
-            (IRepositery<Enrolllment> enrollmentrepo,IRepositery<Student> stuRepo,IInstructorRepository InstRepo, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+            (AppDbContext _context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
-            this.InstRepo = InstRepo;
-            this.stuRepo = stuRepo;
-            this.enrollmentrepo = enrollmentrepo;
+            this.context = _context;
         }
         [Authorize]
         public IActionResult AttendancePage()
@@ -31,14 +29,27 @@ namespace AttendanceSystem.Controllers
             {
                 return RedirectToAction("LogInForm", "Account");
             }
-            string instructorId = TempData.Peek("Instructor")?.ToString();
-            var students = InstRepo.GetStudents(instructorId);
+            string? instructorId = TempData.Peek("Instructor")?.ToString();
+            var students = GetStudents(instructorId);
             return View(students);
         }
         [Authorize]
         public IActionResult AddStudentForm()
         {
             return View();    
+        }
+        public List<ApplicationUser?>? GetStudents(string id)
+        {
+            var course = context?.Instructors.FirstOrDefault(x => x.Id == id)?.CrsId;
+
+            var students = context?.Enrolllments
+                .Include(x => x.student)
+                .ThenInclude(x => x.User)
+                .Where(x => x.CrsId == course)
+                .Select(x => x.student.User)
+                .ToList();
+
+            return students;
         }
     }
 }

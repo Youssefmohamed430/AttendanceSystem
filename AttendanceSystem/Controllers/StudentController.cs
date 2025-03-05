@@ -4,23 +4,18 @@ using AttendanceSystem.Models.Repositories;
 using AttendanceSystem.Views.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AttendanceSystem.Controllers
 {
     public class StudentController : Controller
     {
         private readonly UserManager<ApplicationUser> userManager;
-        private readonly IInstructorRepository InstRepo;
-        private readonly IRepositery<Student> stuRepo;
-        private readonly IRepositery<Enrolllment> enrollmentrepo;
         private readonly AppDbContext context;
         public StudentController
-            (AppDbContext _context,IRepositery<Enrolllment> enrollmentrepo, IRepositery<Student> stuRepo, IInstructorRepository InstRepo, UserManager<ApplicationUser> userManager)
+            (AppDbContext _context,UserManager<ApplicationUser> userManager)
         {
             this.userManager = userManager;
-            this.InstRepo = InstRepo;
-            this.stuRepo = stuRepo;
-            this.enrollmentrepo = enrollmentrepo;
             this.context = _context;
         }
         public async Task<IActionResult> AddStudent(StudentViewModel studmodel)
@@ -40,18 +35,17 @@ namespace AttendanceSystem.Controllers
                 {
                     await userManager.AddToRoleAsync(user, "Student");
                     Student student = new Student() { Id = user.Id };
-                    stuRepo.Add(student);
-                    stuRepo.Save();
+                    context.Students.Add(student);
                     string instructorId = TempData.Peek("Instructor")?.ToString();
-                    int? crsid = InstRepo.GetCourseIdToInstructor(instructorId);
+                    int? crsid = context?.Instructors.FirstOrDefault(x => x.Id == instructorId)?.CrsId;
                     Enrolllment enrolllment = new Enrolllment()
                     {
                         StudId = user.Id,
                         CrsId = (int)crsid,
                         CrsAttendanceRate = 0
                     };
-                    enrollmentrepo.Add(enrolllment);
-                    enrollmentrepo.Save();
+                    context.Enrolllments.Add(enrolllment);
+                    context.SaveChanges();
                     return RedirectToAction("AttendancePage", "Instructor");
                 }
                 foreach (var item in result.Errors)
@@ -66,6 +60,51 @@ namespace AttendanceSystem.Controllers
             var StudentUser = context.Users.FirstOrDefault(x => x.Id == id);
             context.Users.Remove(StudentUser);
             context.SaveChanges();
+            return RedirectToAction("AttendancePage", "Instructor");
+        }
+        public IActionResult GetStudentDetails(string id)
+        {
+            string? instructorId = TempData.Peek("Instructor")?.ToString();
+            var students = GetStudents(instructorId);
+            return View(students);
+        }
+        public List<ApplicationUser?>? GetStudents(string id)
+        {
+            var course = context?.Instructors.FirstOrDefault(x => x.Id == id)?.CrsId;
+
+            var students = context?.Enrolllments
+                .Include(x => x.student)
+                .ThenInclude(x => x.User)
+                .Where(x => x.CrsId == course)
+                .Select(x => x.student.User)
+                .ToList();
+
+            return students;
+        }
+        public IActionResult IsStudentPresent(string stuid,bool ispresent)
+        {
+            var attendances = context.Students
+                .Include(x => x.Attendances)
+                .FirstOrDefault(x => x.Id == stuid)?.Attendances;
+
+            var IsPresentToday = 
+                attendances?.Any(x => x.Date == DateOnly.FromDateTime(DateTime.Now));
+            if(IsPresentToday == false)
+            {
+                Attendance attendance = new Attendance()
+                {
+                    StudId = stuid,
+                    IsPresent = ispresent,
+                    Date = DateOnly.FromDateTime(DateTime.Now)
+                };
+                context.Attendances.Add(attendance);
+                context.SaveChanges();
+                ViewBag.Message = "Attendance has been registered";
+            }
+            else
+            {
+                ViewBag.Message = "Attendance has already been registered";
+            }
             return RedirectToAction("AttendancePage", "Instructor");
         }
     }

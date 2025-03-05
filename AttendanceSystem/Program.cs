@@ -42,7 +42,6 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddScoped(typeof(IRepositery<>),typeof(Repositery<>));
-builder.Services.AddScoped(typeof(IInstructorRepository),typeof(InstructorRepositery));
 
 var app = builder.Build();
 
