@@ -4,7 +4,17 @@
 }
 
 <h1>Attendance</h1>
-
+@if (TempData["Message"] != null)
+{
+    if (TempData?.Peek("Message")?.ToString() == "Attendance has been registered")
+    {
+        <span class="text-success">@TempData.Peek("Message")</span>
+    }
+    else
+    {
+        <span class="text-danger">@TempData.Peek("Message")</span>
+    }
+}
 <table class="table table-striped table-dark">
     <thead>
         <tr>
