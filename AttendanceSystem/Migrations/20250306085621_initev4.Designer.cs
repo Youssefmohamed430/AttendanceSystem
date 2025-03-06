@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AttendanceSystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250303144840_init")]
-    partial class init
+    [Migration("20250306085621_initev4")]
+    partial class initev4
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -115,6 +115,9 @@ namespace AttendanceSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CrsId")
+                        .HasColumnType("int");
+
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
@@ -126,6 +129,8 @@ namespace AttendanceSystem.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CrsId");
 
                     b.HasIndex("StudId");
 
@@ -158,9 +163,8 @@ namespace AttendanceSystem.Migrations
                     b.Property<int>("CrsId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("CrsAttendanceRate")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("decimal(5,2)");
+                    b.Property<int?>("CrsAttendanceRate")
+                        .HasColumnType("int");
 
                     b.HasKey("StudId", "CrsId");
 
@@ -330,11 +334,19 @@ namespace AttendanceSystem.Migrations
 
             modelBuilder.Entity("AttendanceSystem.Models.Entities.Attendance", b =>
                 {
+                    b.HasOne("AttendanceSystem.Models.Entities.Course", "course")
+                        .WithMany("Attendances")
+                        .HasForeignKey("CrsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("AttendanceSystem.Models.Entities.Student", "student")
                         .WithMany("Attendances")
                         .HasForeignKey("StudId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("course");
 
                     b.Navigation("student");
                 });
@@ -448,6 +460,8 @@ namespace AttendanceSystem.Migrations
 
             modelBuilder.Entity("AttendanceSystem.Models.Entities.Course", b =>
                 {
+                    b.Navigation("Attendances");
+
                     b.Navigation("Enrolllments");
 
                     b.Navigation("instructor");

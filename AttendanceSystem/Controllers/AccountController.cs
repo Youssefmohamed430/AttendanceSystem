@@ -42,7 +42,7 @@ namespace AttendanceSystem.Controllers
                         {
                             TempData["Instructor"] = user.Id;
                             TempData.Keep("Instructor");
-                            return RedirectToAction("AttendancePage", "Instructor");
+                            return RedirectToAction("Index", "Home");
                         }
                         else
                         {
@@ -54,7 +54,7 @@ namespace AttendanceSystem.Controllers
                 }
                 ModelState.AddModelError("", "Username OR Password wrong");
             }
-            return View("Login", loginmodel);
+            return View("LogInForm", loginmodel);
         }
         public IActionResult SignInForm()
         {
@@ -93,7 +93,7 @@ namespace AttendanceSystem.Controllers
                     await signInManager.SignInAsync(user, false);
                     TempData["Instructor"] = instructor.Id ;
                     TempData.Keep("Instructor");
-                    return RedirectToAction("AttendancePage", "Instructor");
+                    return RedirectToAction("Index", "Home");
                 }
                 foreach (var item in result.Errors)
                 {

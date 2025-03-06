@@ -13,6 +13,8 @@ namespace AttendanceSystem.Models.Data.Config
             builder.Property(x => x.Name)
                 .HasMaxLength(255)
                 .IsRequired();
+
+            
         }
     }
 }

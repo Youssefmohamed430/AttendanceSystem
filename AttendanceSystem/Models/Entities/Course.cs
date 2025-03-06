@@ -6,5 +6,6 @@
         public required string Name { get; set; }
         public  List<Enrolllment>? Enrolllments { get; set; }
         public Instructor? instructor { get; set; }
+        public List<Attendance>? Attendances { get; set; }
     }
 }

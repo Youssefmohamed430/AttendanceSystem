@@ -1,4 +1,4 @@
-﻿@model List<ApplicationUser>
+﻿@model List<Enrolllment>
 @{
     ViewData["Title"] = "StudentData";
 }
@@ -11,6 +11,7 @@
             <th scope="col">Name</th>
             <th scope="col">Phone</th>
             <th scope="col">Email</th>
+            <th scope="col">Attendance times</th>
             <th scope="col">Actions</th>
         </tr>
     </thead>
@@ -18,11 +19,12 @@
         @foreach (var student in Model)
         {
             <tr>
-                <th scope="row">@student.Name</th>
-                <td>@student.PhoneNumber</td>
-                <td>@student.Email</td>
+                <th scope="row">@student?.student?.User?.Name</th>
+                <td>@student?.student?.User?.PhoneNumber</td>
+                <td>@student?.student?.User?.Email</td>
+                <td>@student?.CrsAttendanceRate</td>
                 <td>
-                    <a class="btn btn-outline-warning" asp-action="RemoveStudent" asp-controller="Student" role="button" asp-route-id="@student.Id" style="margin-right : 20px">Delete</a>
+                    <a class="btn btn-outline-warning" asp-action="RemoveStudent" asp-controller="Student" role="button" asp-route-id="@student.student.User.Id" style="margin-right : 20px">Delete</a>
                 </td>
             </tr>
         }

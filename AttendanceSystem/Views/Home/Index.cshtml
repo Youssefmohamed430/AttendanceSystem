@@ -2,8 +2,81 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <a class="btn btn-primary" asp-action="LogInForm" asp-controller="Account" role="button">LogIn</a>
-    <a class="btn btn-primary" asp-action="SignInForm" asp-controller="Account" role="button">SignIn</a>
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h3 class="display-4 fw-bold text-light">Welcome To An Attendance System</h3>
+                <p class="lead text-light opacity-75">
+                    Here you can track and manage student attendance efficiently. Instructors 
+                    can mark attendance, add students, and monitor participation. Students 
+                    can view their records, personal details, and course information.
+                </p>
+                <p class="text-light opacity-75">
+                    This system helps automate the process, reducing manual effort and ensuring accurate 
+                    records. It enhances communication between instructors and students while improving 
+                    overall classroom management.
+                </p>
+            </div>
+            <div class="col-lg-6">
+                <div class="floating-image">
+                    <img src="~/imgs/AttendImg.png" class="img-fluid" alt="Attendance System">
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    body {
+        background-color: #1a1a1a;
+    }
+    .hero-section {
+        padding: 80px 0;
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+    }
+
+    h1 {
+        margin-bottom: 30px;
+    }
+
+    .lead {
+        font-size: 1.25rem;
+        margin-bottom: 20px;
+    }
+
+    @@keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-30px);
+        }
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    .floating-image {
+        animation: float 4s ease-in-out infinite;
+        text-align: center;
+    }
+
+    .floating-image img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    @@media (max-width: 992px) {
+        .hero-section {
+            padding: 40px 0;
+            min-height: auto;
+        }
+
+        .col-lg-6:first-child {
+            margin-bottom: 40px;
+        }
+    }
+</style>

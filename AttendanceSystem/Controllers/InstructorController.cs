@@ -26,10 +26,6 @@ namespace AttendanceSystem.Controllers
         [Authorize]
         public IActionResult AttendancePage()
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("LogInForm", "Account");
-            }
             string? instructorId = TempData.Peek("Instructor")?.ToString();
             var students = GetStudents(instructorId);
             return View(students);

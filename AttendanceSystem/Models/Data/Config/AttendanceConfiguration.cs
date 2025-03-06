@@ -19,6 +19,11 @@ namespace AttendanceSystem.Models.Data.Config
                    .HasForeignKey(x => x.StudId)
                    .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasOne(x => x.course)
+                   .WithMany(x => x.Attendances)
+                   .HasForeignKey(x => x.CrsId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
             builder.ToTable("Attendances");
         }
     }

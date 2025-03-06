@@ -10,9 +10,6 @@ namespace AttendanceSystem.Models.Data.Config
         {
             builder.HasKey(e => new { e.StudId, e.CrsId });
 
-            builder.Property(e => e.CrsAttendanceRate)
-                .HasPrecision(5, 2);
-
             builder.HasOne(e => e.student)
                    .WithMany(s => s.Enrolllments)
                    .HasForeignKey(e => e.StudId)

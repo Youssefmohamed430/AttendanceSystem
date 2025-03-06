@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AttendanceSystem.Models.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace AttendanceSystem.Views.ViewModels
 {
@@ -23,5 +24,6 @@ namespace AttendanceSystem.Views.ViewModels
         [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "password must contain only letters and numbers")]
         [DataType(DataType.Password)]
         public string password { get; set; }
+
     }
 }

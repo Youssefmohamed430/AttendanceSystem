@@ -6,6 +6,8 @@
         public required DateOnly Date { get; set; }
         public required bool IsPresent { get; set; }
         public required string StudId { get; set; }
+        public required int CrsId { get; set; }
         public Student? student { get; set; }
+        public Course? course { get; set; }
     }
 }

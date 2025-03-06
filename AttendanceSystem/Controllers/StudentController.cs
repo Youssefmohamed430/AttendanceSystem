@@ -12,6 +12,8 @@ namespace AttendanceSystem.Controllers
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly AppDbContext context;
+        string? instructorId;
+        int? crsid;
         public StudentController
             (AppDbContext _context,UserManager<ApplicationUser> userManager)
         {
@@ -36,8 +38,8 @@ namespace AttendanceSystem.Controllers
                     await userManager.AddToRoleAsync(user, "Student");
                     Student student = new Student() { Id = user.Id };
                     context.Students.Add(student);
-                    string instructorId = TempData.Peek("Instructor")?.ToString();
-                    int? crsid = context?.Instructors.FirstOrDefault(x => x.Id == instructorId)?.CrsId;
+                    this.instructorId = TempData.Peek("Instructor")?.ToString();
+                    this.crsid = context?.Instructors.FirstOrDefault(x => x.Id == instructorId)?.CrsId;
                     Enrolllment enrolllment = new Enrolllment()
                     {
                         StudId = user.Id,
@@ -64,54 +66,72 @@ namespace AttendanceSystem.Controllers
         }
         public IActionResult GetStudentDetails(string id)
         {
-            string? instructorId = TempData.Peek("Instructor")?.ToString();
+            this.instructorId = TempData.Peek("Instructor")?.ToString();
+
             var students = GetStudents(instructorId);
+
             return View(students);
         }
-        public List<ApplicationUser?>? GetStudents(string id)
+        public List<Enrolllment?>? GetStudents(string id)
         {
-            var course = context?.Instructors.FirstOrDefault(x => x.Id == id)?.CrsId;
+            this.instructorId = TempData.Peek("Instructor")?.ToString();
+            this.crsid = context?.Instructors.FirstOrDefault(x => x.Id == instructorId)?.CrsId;
 
             var students = context?.Enrolllments
                 .Include(x => x.student)
                 .ThenInclude(x => x.User)
-                .Where(x => x.CrsId == course)
-                .Select(x => x.student.User)
+                .Where(x => x.CrsId == crsid)
                 .ToList();
 
             return students;
         }
         public IActionResult IsStudentPresent(string stuid,bool ispresent)
         {
-            var attendances = context.Students
-                .Include(x => x.Attendances)
-                .FirstOrDefault(x => x.Id == stuid)?.Attendances;
+            this.instructorId = TempData.Peek("Instructor")?.ToString();
+            this.crsid = context?.Instructors.FirstOrDefault(x => x.Id == instructorId)?.CrsId;
 
-            var IsPresentToday = 
-                attendances?.Any(x => x.Date == DateOnly.FromDateTime(DateTime.Now));
+            var IsPresentToday = context.Students
+                .Include(x => x.Attendances)
+                .FirstOrDefault(x => x.Id == stuid)?.Attendances.Any(x =>
+                x.Date == DateOnly.FromDateTime(DateTime.Now)
+                && x.CrsId == crsid);
+
             if(IsPresentToday == false)
             {
                 Attendance attendance = new Attendance()
                 {
                     StudId = stuid,
                     IsPresent = ispresent,
-                    Date = DateOnly.FromDateTime(DateTime.Now)
+                    Date = DateOnly.FromDateTime(DateTime.Now),
+                    CrsId = (int)crsid
                 };
+
                 context.Attendances.Add(attendance);
-                context.SaveChanges();
+
                 TempData["Message"] = "Attendance has been registered";
             }
             else
             {
                 TempData["Message"] = "Attendance has already been registered";
+                return RedirectToAction("AttendancePage", "Instructor");
             }
+
+            if(ispresent)
+            {
+                var enroll = context.Enrolllments.FirstOrDefault(x => 
+                x.StudId == stuid && x.CrsId == crsid);
+
+                enroll.CrsAttendanceRate++;
+
+            }
+            context.SaveChanges();
+
             return RedirectToAction("AttendancePage", "Instructor");
         }
         public IActionResult AddExistingStudentForm()
         {
             return View();
         }
-
         [HttpPost]
         public IActionResult SearchStudent(string Stuname)
         {
@@ -132,11 +152,10 @@ namespace AttendanceSystem.Controllers
 
             return View("AddExistingStudentForm", student);
         }
-
         public IActionResult AddExistingStudent(string stuid)
         {
-            string instructorId = TempData.Peek("Instructor")?.ToString();
-            int? crsid = context?.Instructors.FirstOrDefault(x => x.Id == instructorId)?.CrsId;
+            this.instructorId = TempData.Peek("Instructor")?.ToString();
+            this.crsid = context?.Instructors.FirstOrDefault(x => x.Id == instructorId)?.CrsId;
             Enrolllment enrolllment = new Enrolllment()
             {
                 StudId = stuid,
@@ -146,6 +165,42 @@ namespace AttendanceSystem.Controllers
             context.Enrolllments.Add(enrolllment);
             context.SaveChanges();
             return RedirectToAction("GetStudentDetails");
+        }
+        public IActionResult Pofile(string Id)
+        {
+            var enrollments = context?.Enrolllments
+                .Include(x => x.course)
+                .ThenInclude(x => x.instructor)
+                .ThenInclude(x => x.User)
+                .Include(x => x.student)
+                .ThenInclude(x => x.User)
+                .Where(x => x.StudId == Id)
+                .ToList();
+
+            ProfileViewModell ProfileViewModel = new ProfileViewModell()
+            {
+                Name = enrollments[0].student.User.Name,
+                Email = enrollments[0].student.User.Email,
+                Phone = enrollments[0].student.User.PhoneNumber,
+                UserName = enrollments[0].student.User.UserName,
+                enrolllments = enrollments
+            };
+
+            return View(ProfileViewModel);
+        }
+
+        public IActionResult SaveUpdates(string id ,StudentViewModel StudView)
+        {
+            var studentUser = context?.Users?.FirstOrDefault(x => x.Id == id);
+
+            studentUser.Name = StudView.Name;
+            studentUser.Email = StudView.Email;
+            studentUser.PhoneNumber = StudView.Phone;
+            studentUser.UserName = StudView.UserName;
+
+            context?.SaveChanges();
+
+            return View("Pofile",StudView);
         }
     }
 }

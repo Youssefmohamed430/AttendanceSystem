@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AttendanceSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class inite : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,7 +31,8 @@ namespace AttendanceSystem.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Attendancetimes = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -223,11 +224,18 @@ namespace AttendanceSystem.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
                     IsPresent = table.Column<bool>(type: "bit", nullable: false),
-                    StudId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    StudId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CrsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Attendances", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Attendances_Courses_CrsId",
+                        column: x => x.CrsId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Attendances_Students_StudId",
                         column: x => x.StudId,
@@ -287,6 +295,11 @@ namespace AttendanceSystem.Migrations
                 name: "IX_AspNetUserRoles_RoleId",
                 table: "AspNetUserRoles",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Attendances_CrsId",
+                table: "Attendances",
+                column: "CrsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Attendances_StudId",
