@@ -1,12 +1,12 @@
 ﻿using AttendanceSystem.Models.Data;
 using AttendanceSystem.Models.Entities;
-using AttendanceSystem.Models.Repositories;
 using AttendanceSystem.Views.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace AttendanceSystem.Controllers
 {
@@ -26,8 +26,8 @@ namespace AttendanceSystem.Controllers
         [Authorize]
         public IActionResult AttendancePage()
         {
-            string? instructorId = TempData.Peek("Instructor")?.ToString();
-            var students = GetStudents(instructorId);
+            var instid = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+            var students = GetStudents(instid.Value);
             return View(students);
         }
         [Authorize]
@@ -35,16 +35,16 @@ namespace AttendanceSystem.Controllers
         {
             return View();    
         }
-        public List<ApplicationUser?>? GetStudents(string id)
+        public IQueryable<ApplicationUser> GetStudents(string id)
         {
-            var course = context?.Instructors.FirstOrDefault(x => x.Id == id)?.CrsId;
+            var course = User?.Claims?.FirstOrDefault(x => x.Type == "CrsId")?.Value;
 
             var students = context?.Enrolllments
+                .AsNoTracking()
                 .Include(x => x.student)
                 .ThenInclude(x => x.User)
-                .Where(x => x.CrsId == course)
-                .Select(x => x.student.User)
-                .ToList();
+                .Where(x => x.CrsId == Convert.ToInt32(course))
+                .Select(x => x.student.User);
 
             return students;
         }

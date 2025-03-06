@@ -1,10 +1,10 @@
 ﻿using AttendanceSystem.Models.Data;
 using AttendanceSystem.Models.Entities;
-using AttendanceSystem.Models.Repositories;
 using AttendanceSystem.Views.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace AttendanceSystem.Controllers
 {
@@ -33,13 +33,16 @@ namespace AttendanceSystem.Controllers
 
                 IdentityResult result =
                     await userManager.CreateAsync(user, studmodel.password);
+
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(user, "Student");
+
+                    await userManager.AddClaimAsync(user, new Claim("StudentId", user.Id));
+
                     Student student = new Student() { Id = user.Id };
                     context.Students.Add(student);
-                    this.instructorId = TempData.Peek("Instructor")?.ToString();
-                    this.crsid = context?.Instructors.FirstOrDefault(x => x.Id == instructorId)?.CrsId;
+                    this.crsid = Convert.ToInt32(User?.Claims?.FirstOrDefault(x => x.Type == "CrsId")?.Value);
                     Enrolllment enrolllment = new Enrolllment()
                     {
                         StudId = user.Id,
@@ -62,37 +65,36 @@ namespace AttendanceSystem.Controllers
             var StudentUser = context.Users.FirstOrDefault(x => x.Id == id);
             context.Users.Remove(StudentUser);
             context.SaveChanges();
-            return RedirectToAction("AttendancePage", "Instructor");
+            return RedirectToAction("GetStudentDetails");
         }
         public IActionResult GetStudentDetails(string id)
         {
-            this.instructorId = TempData.Peek("Instructor")?.ToString();
+            this.instructorId = User?.Claims?
+                .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
 
             var students = GetStudents(instructorId);
 
             return View(students);
         }
-        public List<Enrolllment?>? GetStudents(string id)
+        public IQueryable<Enrolllment>? GetStudents(string id)
         {
-            this.instructorId = TempData.Peek("Instructor")?.ToString();
-            this.crsid = context?.Instructors.FirstOrDefault(x => x.Id == instructorId)?.CrsId;
+            this.crsid = Convert.ToInt32(User?.Claims?.FirstOrDefault(x => x.Type == "CrsId")?.Value);
 
             var students = context?.Enrolllments
+                .AsNoTracking()
                 .Include(x => x.student)
                 .ThenInclude(x => x.User)
-                .Where(x => x.CrsId == crsid)
-                .ToList();
+                .Where(x => x.CrsId == crsid);
 
             return students;
         }
         public IActionResult IsStudentPresent(string stuid,bool ispresent)
         {
-            this.instructorId = TempData.Peek("Instructor")?.ToString();
-            this.crsid = context?.Instructors.FirstOrDefault(x => x.Id == instructorId)?.CrsId;
+            this.crsid = Convert.ToInt32(User?.Claims?.FirstOrDefault(x => x.Type == "CrsId")?.Value);
 
             var IsPresentToday = context.Students
                 .Include(x => x.Attendances)
-                .FirstOrDefault(x => x.Id == stuid)?.Attendances.Any(x =>
+                .FirstOrDefault(x => x.Id == stuid)?.Attendances?.Any(x =>
                 x.Date == DateOnly.FromDateTime(DateTime.Now)
                 && x.CrsId == crsid);
 
@@ -154,21 +156,24 @@ namespace AttendanceSystem.Controllers
         }
         public IActionResult AddExistingStudent(string stuid)
         {
-            this.instructorId = TempData.Peek("Instructor")?.ToString();
-            this.crsid = context?.Instructors.FirstOrDefault(x => x.Id == instructorId)?.CrsId;
+            this.crsid = Convert.ToInt32(User?.Claims?.FirstOrDefault(x => x.Type == "CrsId")?.Value);
+
             Enrolllment enrolllment = new Enrolllment()
             {
                 StudId = stuid,
                 CrsId = (int)crsid,
                 CrsAttendanceRate = 0
             };
+
             context.Enrolllments.Add(enrolllment);
             context.SaveChanges();
+
             return RedirectToAction("GetStudentDetails");
         }
-        public IActionResult Pofile(string Id)
+        public IActionResult Profile(string Id)
         {
             var enrollments = context?.Enrolllments
+                .AsNoTracking()
                 .Include(x => x.course)
                 .ThenInclude(x => x.instructor)
                 .ThenInclude(x => x.User)
@@ -189,18 +194,28 @@ namespace AttendanceSystem.Controllers
             return View(ProfileViewModel);
         }
 
-        public IActionResult SaveUpdates(string id ,StudentViewModel StudView)
+        public IActionResult SaveUpdates(string id ,ProfileViewModell profStudView)
         {
             var studentUser = context?.Users?.FirstOrDefault(x => x.Id == id);
-
-            studentUser.Name = StudView.Name;
-            studentUser.Email = StudView.Email;
-            studentUser.PhoneNumber = StudView.Phone;
-            studentUser.UserName = StudView.UserName;
+            
+            studentUser.Name = profStudView.Name;
+            studentUser.Email = profStudView.Email;
+            studentUser.PhoneNumber = profStudView.Phone;
+            studentUser.UserName = profStudView.UserName;
 
             context?.SaveChanges();
 
-            return View("Pofile",StudView);
+            var enrollments = context?.Enrolllments
+                .AsNoTracking()
+                .Include(x => x.course)
+                .ThenInclude(x => x.instructor)
+                .ThenInclude(x => x.User)
+                .Where(x => x.StudId == id)
+                .ToList();
+
+            profStudView.enrolllments = enrollments;
+
+            return View("Profile", profStudView);
         }
     }
 }

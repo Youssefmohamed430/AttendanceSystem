@@ -1,6 +1,5 @@
 using AttendanceSystem.Models.Data;
 using AttendanceSystem.Models.Entities;
-using AttendanceSystem.Models.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,7 +40,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
 });
 
-builder.Services.AddScoped(typeof(IRepositery<>),typeof(Repositery<>));
 
 var app = builder.Build();
 

@@ -1,9 +1,10 @@
-﻿using AttendanceSystem.Models.Entities;
-using AttendanceSystem.Models.Repositories;
+﻿using AttendanceSystem.Models.Data;
+using AttendanceSystem.Models.Entities;
 using AttendanceSystem.Views.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
 
 namespace AttendanceSystem.Controllers
 {
@@ -11,15 +12,13 @@ namespace AttendanceSystem.Controllers
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
-        private readonly IRepositery<Instructor> InstRepo;
-        private readonly IRepositery<Course> crsRepo;
+        public readonly AppDbContext context;
         public AccountController
-            (IRepositery<Course> crsRepo, IRepositery<Instructor> InstRepo,UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+            (AppDbContext _context,UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
-            this.InstRepo = InstRepo;
-            this.crsRepo = crsRepo;
+            this.context = _context;
         }
         public IActionResult LogInForm()
         {
@@ -37,19 +36,9 @@ namespace AttendanceSystem.Controllers
                         await userManager.CheckPasswordAsync(user, loginmodel.Password);
                     if (found)
                     {
+                        var crsid = context?.Instructors?.FirstOrDefault(x => x.Id == user.Id)?.CrsId;
                         await signInManager.SignInAsync(user, loginmodel.RememberMe);
-                        if(User.IsInRole("Instructor"))
-                        {
-                            TempData["Instructor"] = user.Id;
-                            TempData.Keep("Instructor");
-                            return RedirectToAction("Index", "Home");
-                        }
-                        else
-                        {
-                            TempData["Student"] = user.Id;
-                            TempData.Keep("Student");
-                            return RedirectToAction("Index", "Home");
-                        }
+                        return RedirectToAction("Index", "Home");
                     }
                 }
                 ModelState.AddModelError("", "Username OR Password wrong");
@@ -58,7 +47,7 @@ namespace AttendanceSystem.Controllers
         }
         public IActionResult SignInForm()
         {
-            var courses = crsRepo.GetAll();
+            var courses = context?.Courses.ToList();
 
             if (courses == null)
             {
@@ -87,12 +76,11 @@ namespace AttendanceSystem.Controllers
                     await userManager.AddToRoleAsync(user, "Instructor");
                     Instructor instructor = new Instructor()
                     { Id = user.Id , CrsId = InstModel.Courseid };
-                    InstRepo.Add(instructor);
-                    InstRepo.Save();
+                    context.Instructors.Add(instructor);
+                    context.SaveChanges();
                     //Cookie 
+                    await userManager.AddClaimAsync(user,new Claim("CrsId", InstModel.Courseid.ToString()));
                     await signInManager.SignInAsync(user, false);
-                    TempData["Instructor"] = instructor.Id ;
-                    TempData.Keep("Instructor");
                     return RedirectToAction("Index", "Home");
                 }
                 foreach (var item in result.Errors)
@@ -102,7 +90,7 @@ namespace AttendanceSystem.Controllers
             }
             return View("SignInForm", InstModel);
         }
-        public async Task<IActionResult> SignOut()
+        public async Task<IActionResult> Signout()
         {
             await signInManager.SignOutAsync();
 

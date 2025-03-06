@@ -34,13 +34,20 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Instructor" asp-action="AttendancePage">Attendance</a>
                                 </li>
-                                <a class="btn btn-primary ms-auto" asp-action="SignOut" asp-controller="Account" role="button">Sign out</a>
+                                <a class="btn btn-primary ms-auto" asp-action="Signout" asp-controller="Account" role="button">Sign out</a>
                             }  
                             else
                             {
-                                <a class="btn btn-primary ms-auto" asp-action="Pofile" asp-controller="Student" asp-route-Id="@TempData.Peek("Student").ToString()" role="button">
-                                      <img src="~/imgs/profile-icon-9.png"  class="img-fluid rounded-circle" style="width: 20px;" title= "Profile">
-                                </a>
+                                @if (User.IsInRole("Student"))
+                                {
+                                    var studentId = User.Claims.FirstOrDefault(c => c.Type == "StudentId")?.Value;
+                                    if (!string.IsNullOrEmpty(studentId))
+                                    {
+                                        <a class="btn btn-primary ms-auto" asp-action="Profile" asp-controller="Student" asp-route-Id="@studentId" role="button">
+                                            <img src="~/imgs/profile-icon-9.png" class="img-fluid rounded-circle" style="width: 20px;" title="Profile">
+                                        </a>
+                                    }
+                                }
                             }
                         }
                     </ul>
