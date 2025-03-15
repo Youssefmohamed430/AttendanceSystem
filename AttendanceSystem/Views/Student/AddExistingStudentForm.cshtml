@@ -8,11 +8,11 @@
 </form>
 <br />
 
-@if (TempData?.Peek("Message")?.ToString() != null)
+@if(TempData?.Peek("Message")?.ToString() != null)
 {
     <span class="text-danger">@TempData?.Peek("Message")?.ToString()</span>
 }
-else if (Model != null)
+@if(Model != null)
 {
     <table class="table table-striped table-dark">
         <thead>

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Security.Claims;
 
 namespace AttendanceSystem.Controllers
@@ -15,9 +16,9 @@ namespace AttendanceSystem.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly AppDbContext context;
-
+        private int crsid;
         public InstructorController
-            (AppDbContext _context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+            (ILogger<HomeController> logger,AppDbContext _context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -35,16 +36,26 @@ namespace AttendanceSystem.Controllers
         {
             return View();    
         }
-        public IQueryable<ApplicationUser> GetStudents(string id)
+        public IQueryable<UserDTO> GetStudents(string id)
         {
+
             var course = User?.Claims?.FirstOrDefault(x => x.Type == "CrsId")?.Value;
 
             var students = context?.Enrolllments
                 .AsNoTracking()
                 .Include(x => x.student)
                 .ThenInclude(x => x.User)
+                .Include(x => x.student)
+                .ThenInclude(x => x.Attendances)
                 .Where(x => x.CrsId == Convert.ToInt32(course))
-                .Select(x => x.student.User);
+                .Select(x => new UserDTO
+                {
+                    Name = x.student.User.Name,
+                    Id = x.student.User.Id,
+                    HasAttend = x.student.Attendances
+                    .Any(a => a.CrsId == Convert.ToInt32(course)
+                    && a.Date == DateOnly.FromDateTime(DateTime.Now))
+                });
 
             return students;
         }

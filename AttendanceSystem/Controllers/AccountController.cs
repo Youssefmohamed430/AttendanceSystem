@@ -41,7 +41,7 @@ namespace AttendanceSystem.Controllers
                         return RedirectToAction("Index", "Home");
                     }
                 }
-                ModelState.AddModelError("", "Username OR Password wrong");
+                ModelState.AddModelError("", "Username Or Password wrong");
             }
             return View("LogInForm", loginmodel);
         }

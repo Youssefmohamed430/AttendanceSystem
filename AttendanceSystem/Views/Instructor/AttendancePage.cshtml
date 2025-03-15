@@ -1,39 +1,45 @@
-﻿@model IQueryable<ApplicationUser>
+﻿@model IQueryable<UserDTO>
 @{
     ViewData["Title"] = "AttendancePage";
 }
 
 <h1>Attendance</h1>
-@if (TempData["Message"] != null)
+@if (!Model.Any(s => s.HasAttend == false))
 {
-    if (TempData?.Peek("Message")?.ToString() == "Attendance has been registered")
+    <span class="text-success" style="font-size : 50px; margin-left: 200px">Attendance is recorded for all students &#9989;</span>
+}
+else
+{
+    @if (TempData["Message"] != null)
     {
         <span class="text-success">@TempData.Peek("Message")</span>
     }
-    else
-    {
-        <span class="text-danger">@TempData.Peek("Message")</span>
-    }
-}
-<table class="table table-striped table-dark">
-    <thead>
-        <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach(var student in Model)
-        {
+    <table class="table table-striped table-dark">
+        <thead>
             <tr>
-                <th scope="row">@student.Name</th>
-                <td>
-                    <a class="btn btn-outline-primary" asp-action="IsStudentPresent" asp-controller="Student" asp-route-stuid="@student.Id" asp-route-ispresent="@true" role="button" style="margin-right : 20px">Present</a>
-                    <a class="btn btn-outline-danger" asp-action="IsStudentPresent" asp-controller="Student" asp-route-stuid="@student.Id" asp-route-ispresent="@false" role="button" style="margin-right : 20px">Not Present</a>
-                </td>
+                <th scope="col">Name</th>
+                <th scope="col">Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+              @foreach(var student in Model)
+              {
+                  if(student.HasAttend == false)
+                  {
+                      <tr>
+                          <td scope="row">@student.Name</td>
+                          <td>
+                              <a class="btn btn-outline-primary" asp-action="IsStudentPresent" asp-controller="Student" asp-route-stuid="@student.Id" asp-route-ispresent="@true" role="button" style="margin-right : 20px">Present</a>
+                              <a class="btn btn-outline-danger" asp-action="IsStudentPresent" asp-controller="Student" asp-route-stuid="@student.Id" asp-route-ispresent="@false" role="button" style="margin-right : 20px">Not Present</a>
+                          </td>
+                      </tr>
+                  }
+              }
+        </tbody>
+    </table>
+}
+
+
+
 
 

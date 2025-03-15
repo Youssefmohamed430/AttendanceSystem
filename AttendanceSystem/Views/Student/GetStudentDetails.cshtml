@@ -1,4 +1,4 @@
-﻿@model IQueryable<Enrolllment>
+﻿@model IQueryable<UserDTO>
 @{
     ViewData["Title"] = "StudentData";
 }
@@ -19,12 +19,12 @@
         @foreach (var student in Model)
         {
             <tr>
-                <th scope="row">@student?.student?.User?.Name</th>
-                <td>@student?.student?.User?.PhoneNumber</td>
-                <td>@student?.student?.User?.Email</td>
+                <th scope="row">@student?.Name</th>
+                <td>@student?.Phone</td>
+                <td>@student?.Email</td>
                 <td>@student?.CrsAttendanceRate</td>
                 <td>
-                    <a class="btn btn-outline-warning" asp-action="RemoveStudent" asp-controller="Student" role="button" asp-route-id="@student.student.User.Id" style="margin-right : 20px">Delete</a>
+                    <a class="btn btn-outline-warning" asp-action="RemoveStudent" asp-controller="Student" role="button" asp-route-id="@student.Id" style="margin-right : 20px">Delete</a>
                 </td>
             </tr>
         }

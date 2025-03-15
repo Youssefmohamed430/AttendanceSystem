@@ -62,9 +62,17 @@ namespace AttendanceSystem.Controllers
         }
         public IActionResult RemoveStudent(string id)
         {
-            var StudentUser = context.Users.FirstOrDefault(x => x.Id == id);
-            context.Users.Remove(StudentUser);
+            this.crsid = Convert.ToInt32(User?.Claims?.FirstOrDefault(x => x.Type == "CrsId")?.Value);
+
+            var studentEnrollment = context.Enrolllments
+                .FirstOrDefault(x => x.StudId == id && x.CrsId == crsid);
+
+            context.Enrolllments.Remove(studentEnrollment);
+
+            context.Attendances.Where(x => x.CrsId == crsid && x.StudId == id).ExecuteDelete();
+
             context.SaveChanges();
+
             return RedirectToAction("GetStudentDetails");
         }
         public IActionResult GetStudentDetails(string id)
@@ -76,7 +84,7 @@ namespace AttendanceSystem.Controllers
 
             return View(students);
         }
-        public IQueryable<Enrolllment>? GetStudents(string id)
+        public IQueryable<UserDTO>? GetStudents(string id)
         {
             this.crsid = Convert.ToInt32(User?.Claims?.FirstOrDefault(x => x.Type == "CrsId")?.Value);
 
@@ -84,39 +92,36 @@ namespace AttendanceSystem.Controllers
                 .AsNoTracking()
                 .Include(x => x.student)
                 .ThenInclude(x => x.User)
-                .Where(x => x.CrsId == crsid);
+                .Where(x => x.CrsId == crsid)
+                .Select(x => new UserDTO {
+                    Id = x.StudId,
+                    Name = x.student.User.Name,
+                    Email = x.student.User.Email,
+                    CrsAttendanceRate = x.CrsAttendanceRate,
+                    Phone = x.student.User.PhoneNumber,
+                });
+
+            Console.WriteLine(students.ToQueryString());
 
             return students;
         }
         public IActionResult IsStudentPresent(string stuid,bool ispresent)
         {
+
             this.crsid = Convert.ToInt32(User?.Claims?.FirstOrDefault(x => x.Type == "CrsId")?.Value);
 
-            var IsPresentToday = context.Students
-                .Include(x => x.Attendances)
-                .FirstOrDefault(x => x.Id == stuid)?.Attendances?.Any(x =>
-                x.Date == DateOnly.FromDateTime(DateTime.Now)
-                && x.CrsId == crsid);
-
-            if(IsPresentToday == false)
+            Attendance attendance = new Attendance()
             {
-                Attendance attendance = new Attendance()
-                {
-                    StudId = stuid,
-                    IsPresent = ispresent,
-                    Date = DateOnly.FromDateTime(DateTime.Now),
-                    CrsId = (int)crsid
-                };
+                StudId = stuid,
+                IsPresent = ispresent,
+                Date = DateOnly.FromDateTime(DateTime.Now),
+                CrsId = (int)crsid
+            };
 
-                context.Attendances.Add(attendance);
+            context.Attendances.Add(attendance);
 
-                TempData["Message"] = "Attendance has been registered";
-            }
-            else
-            {
-                TempData["Message"] = "Attendance has already been registered";
-                return RedirectToAction("AttendancePage", "Instructor");
-            }
+            TempData["Message"] = "Attendance has been registered";
+            
 
             if(ispresent)
             {
@@ -126,6 +131,7 @@ namespace AttendanceSystem.Controllers
                 enroll.CrsAttendanceRate++;
 
             }
+
             context.SaveChanges();
 
             return RedirectToAction("AttendancePage", "Instructor");
