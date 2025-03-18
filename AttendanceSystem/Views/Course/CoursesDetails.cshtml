@@ -1,0 +1,30 @@
+﻿@model List<Course> 
+@{
+    ViewData["Title"] = "CoursesDetails";
+}
+
+<h1>Courses Details</h1>
+
+<table class="table table-striped table-dark">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Instructor</th>
+            <th scope="col">Number of registered students</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(Course course in Model)
+        {
+            <tr>
+                <td scope="row">@course.Id</td>
+                <td scope="row">@course.Name</td>
+                <td scope="row">@course?.instructor?.User?.Name</td>
+                <td scope="row">@course?.Enrolllments?.Capacity</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<br/>
+<a class="btn btn-primary" asp-action="AddCourseForm" asp-controller="Course" role="button" style="margin-right : 30px">Add New Course</a>

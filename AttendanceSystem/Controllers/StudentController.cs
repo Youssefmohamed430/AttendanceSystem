@@ -223,5 +223,39 @@ namespace AttendanceSystem.Controllers
 
             return View("Profile", profStudView);
         }
+        public IActionResult ShowStudentCoursesView()
+        {
+            return View();
+        }
+        public IActionResult ShowStudentCourses(string Stuname)
+        {
+            if (string.IsNullOrWhiteSpace(Stuname))
+            {
+                TempData["Message"] = "Please enter a student name.";
+                return View("ShowStudentCoursesView");
+            }
+
+            var student = context.Users
+                         .FirstOrDefault(x => x.Name.ToLower().Contains(Stuname.ToLower()));
+
+            if (student == null)
+            {
+                TempData["Message"] = "The Student Not Found";
+                return View("ShowStudentCoursesView");
+            }
+
+            var enrollments = context?.Enrolllments
+                .AsNoTracking()
+                .Include(x => x.course)
+                .ThenInclude(x => x.instructor)
+                .ThenInclude(x => x.User)
+                .Include(x => x.student)
+                .ThenInclude(x => x.User)
+                .Where(x => x.StudId == student.Id)
+                .ToList();
+
+            return View("ShowStudentCoursesView", enrollments);
+        }
+    
     }
 }
