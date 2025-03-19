@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using AttendanceSystem.Models;
+using AttendanceSystem.Models.Data;
+using AttendanceSystem.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AttendanceSystem.Controllers
@@ -7,19 +9,32 @@ namespace AttendanceSystem.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly AppDbContext context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(AppDbContext _context,ILogger<HomeController> logger)
         {
             _logger = logger;
+            this.context = _context;
         }
 
         public IActionResult Index()
         {
-            if (!User.Identity.IsAuthenticated)
+            if (!User.Identity.IsAuthenticated )
             {
                 return RedirectToAction("LogInForm", "Account");
             }
-            return View();
+            if (User.IsInRole("Student"))
+            {
+                var studentId = User.Claims.FirstOrDefault(c => c.Type == "StudentId")?.Value;
+                if (!string.IsNullOrEmpty(studentId))
+                {
+                    var notifications = context.Notifications
+                        .Where(x => x.StudentId == studentId)
+                        .ToList();
+                    return View(notifications);
+                }
+            }
+            return View(new List<Notification>());
         }
 
         public IActionResult Privacy()

@@ -9,6 +9,7 @@ namespace AttendanceSystem.Models.Entities
         [Required]
         public ApplicationUser? User { get; set; }
         public List<Attendance>? Attendances { get; set; }
+        public List<Notification>? Notifications { get; set; }
         public List<Enrolllment>? Enrolllments { get; set; }
     }
 }

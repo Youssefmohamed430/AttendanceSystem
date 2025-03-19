@@ -13,6 +13,7 @@ namespace AttendanceSystem.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         public readonly AppDbContext context;
+        //public readonly HomeController Home;
         public AccountController
             (AppDbContext _context,UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
@@ -38,10 +39,18 @@ namespace AttendanceSystem.Controllers
                     {
                         var crsid = context?.Instructors?.FirstOrDefault(x => x.Id == user.Id)?.CrsId;
                         await signInManager.SignInAsync(user, loginmodel.RememberMe);
+                        //if(User.IsInRole("Student"))
+                        //{
+                        //    var Notifications = context?.Notifications
+                        //        .Where(x => x.StudentId == user.Id)
+                        //        .ToList();
+
+                        //    return Home.Index(Notifications); 
+                        //}
                         return RedirectToAction("Index", "Home");
                     }
                 }
-                ModelState.AddModelError("", "Username Or Password wrong");
+                ModelState.AddModelError("", "Username or Password wrong");
             }
             return View("LogInForm", loginmodel);
         }

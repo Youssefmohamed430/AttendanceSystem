@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@model List<Notification>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -8,6 +9,8 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AttendanceSystem.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     @RenderSection("Styles", required: false)
 </head>
 <body>
@@ -52,6 +55,29 @@
                                     var studentId = User.Claims.FirstOrDefault(c => c.Type == "StudentId")?.Value;
                                     if (!string.IsNullOrEmpty(studentId))
                                     {
+                                        <div class="dropdown" style="position: absolute; right: 90px; margin-top: 10px;">
+                                            <button class="btn" type="button" id="dropdownMenu2" data-bs-toggle="dropdown"
+                                                    aria-haspopup="true" aria-expanded="false"
+                                                    style="background: transparent; border: none; padding: 0;">
+                                                <i class="fa fa-bell" style="font-size: 24px; color: blue;"></i>
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenu2" data-bs-popper="static">
+                                                @if (Model != null && Model.Any())
+                                                {
+                                                    @foreach (var notif in Model)
+                                                    {
+                                                        <p class ="dropdown-item">@notif.Message</p>
+                                                        <hr/>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <p class="dropdown-item">No Notifications</p>
+
+                                                }
+                                            </div>
+                                        </div>
+
                                         <a class="btn btn-primary ms-auto" asp-action="Profile" asp-controller="Student" asp-route-Id="@studentId" role="button">
                                             <img src="~/imgs/profile-icon-9.png" class="img-fluid rounded-circle" style="width: 20px;" title="Profile">
                                         </a>

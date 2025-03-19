@@ -20,7 +20,14 @@
             <tr>
                 <td scope="row">@course.Id</td>
                 <td scope="row">@course.Name</td>
-                <td scope="row">@course?.instructor?.User?.Name</td>
+                @if (@course?.instructor != null)
+                {
+                    <td scope="row"><b>@course?.instructor?.User?.Name</b></td>
+                }
+                else
+                {
+                    <td scope="row">No Instructor</td>
+                }
                 <td scope="row">@course?.Enrolllments?.Capacity</td>
             </tr>
         }

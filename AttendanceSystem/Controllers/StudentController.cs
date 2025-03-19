@@ -50,6 +50,12 @@ namespace AttendanceSystem.Controllers
                         CrsAttendanceRate = 0
                     };
                     context.Enrolllments.Add(enrolllment);
+                    Notification notification = new Notification()
+                    {
+                        StudentId = user.Id,
+                        Message = "You have been enrolled in a course"
+                    };
+                    context.Notifications.Add(notification);
                     context.SaveChanges();
                     return RedirectToAction("AttendancePage", "Instructor");
                 }
@@ -107,8 +113,11 @@ namespace AttendanceSystem.Controllers
         }
         public IActionResult IsStudentPresent(string stuid,bool ispresent)
         {
-
+            string InstName = User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
             this.crsid = Convert.ToInt32(User?.Claims?.FirstOrDefault(x => x.Type == "CrsId")?.Value);
+            string CrsName = context?.Courses?.FirstOrDefault(x => x.Id == crsid)?.Name;
+
+            string message = "Your absence was recorded by " +InstName+" in "  + CrsName + "'s course.";
 
             Attendance attendance = new Attendance()
             {
@@ -129,9 +138,16 @@ namespace AttendanceSystem.Controllers
                 x.StudId == stuid && x.CrsId == crsid);
 
                 enroll.CrsAttendanceRate++;
-
+                message = "You have been registered by "+InstName+" for "+CrsName+"'s\" course.";
             }
 
+            Notification notification = new Notification()
+            {
+                StudentId = stuid, 
+                Message = message,
+            };
+
+            context.Notifications.Add(notification);
             context.SaveChanges();
 
             return RedirectToAction("AttendancePage", "Instructor");
