@@ -1,0 +1,18 @@
+﻿@model List<Notification>
+
+<div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenu2" data-bs-popper="static">
+    @if (Model != null && Model.Any())
+    {
+        @foreach (var notif in Model)
+        {
+             <p class="dropdown-item">@notif.Message at @notif.DateSent
+             <a  asp-action="MarkAsRead" asp-controller="Notification" asp-route-Id="@notif.Id">Mark as Read</a>
+             </p>
+             <hr />
+        }
+    }
+    else
+    {
+        <p class="dropdown-item">No Notifications</p>
+    }
+</div>

@@ -1,5 +1,4 @@
-﻿@model List<Notification>
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -61,23 +60,8 @@
                                                     style="background: transparent; border: none; padding: 0;">
                                                 <i class="fa fa-bell" style="font-size: 24px; color: blue;"></i>
                                             </button>
-                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenu2" data-bs-popper="static">
-                                                @if (Model != null && Model.Any())
-                                                {
-                                                    @foreach (var notif in Model)
-                                                    {
-                                                        <p class ="dropdown-item">@notif.Message</p>
-                                                        <hr/>
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    <p class="dropdown-item">No Notifications</p>
-
-                                                }
-                                            </div>
+                                            <partial name="_NotificationsPartialViiew" model="(List<Notification>)ViewBag.Notife" />
                                         </div>
-
                                         <a class="btn btn-primary ms-auto" asp-action="Profile" asp-controller="Student" asp-route-Id="@studentId" role="button">
                                             <img src="~/imgs/profile-icon-9.png" class="img-fluid rounded-circle" style="width: 20px;" title="Profile">
                                         </a>

@@ -28,13 +28,17 @@ namespace AttendanceSystem.Controllers
                 var studentId = User.Claims.FirstOrDefault(c => c.Type == "StudentId")?.Value;
                 if (!string.IsNullOrEmpty(studentId))
                 {
-                    var notifications = context.Notifications
+                        var notifications = context.Notifications
                         .Where(x => x.StudentId == studentId)
+                        .Where(x => x.IsRead == false)
                         .ToList();
-                    return View(notifications);
+
+                        ViewBag.Notife = notifications;
+
+                    return View();
                 }
             }
-            return View(new List<Notification>());
+            return View();
         }
 
         public IActionResult Privacy()

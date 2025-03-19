@@ -138,7 +138,7 @@ namespace AttendanceSystem.Controllers
                 x.StudId == stuid && x.CrsId == crsid);
 
                 enroll.CrsAttendanceRate++;
-                message = "You have been registered by "+InstName+" for "+CrsName+"'s\" course.";
+                message = "You have been registered by "+InstName+" for "+CrsName+"'s course.";
             }
 
             Notification notification = new Notification()
@@ -212,6 +212,13 @@ namespace AttendanceSystem.Controllers
                 UserName = enrollments[0].student.User.UserName,
                 enrolllments = enrollments
             };
+
+            var notifications = context.Notifications
+                         .Where(x => x.StudentId == Id)
+                         .Where(x => x.IsRead == false)
+                         .ToList();
+
+            ViewBag.Notife = notifications;
 
             return View(ProfileViewModel);
         }
