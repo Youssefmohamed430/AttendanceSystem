@@ -39,7 +39,6 @@
                  <li>🔹 Data Annotations </li>
                  <li>🔹 Mapping</li>
                  <li>🔹 Migration (Code First) </li>
-                 <li>🔹 partial view </li> 
             </ul>
         </li>
         <li>🔹<strong>MVC</strong>
@@ -50,6 +49,7 @@
                  <li>🔹 Identity </li>    
                  <li>🔹 MiddleWares </li>             
                  <li>🔹 Dependancy Injection </li>        
+                 <li>🔹 partial view </li> 
             </ul>
         </li>
         <li>🔹<strong>Razor Pages</strong></li>
