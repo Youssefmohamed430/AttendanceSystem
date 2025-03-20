@@ -12,7 +12,7 @@
     </ul>
   <h3>✅ For Students:</h3>
     <ul>
-        <li>Sign up and log in with their own accounts.</li>
+        <li>log in with their own accounts.</li>
         <li>View and update their personal details.</li>
         <li>Notifications to inform students about their attendance status and course enrollment.</li>
     </ul>
