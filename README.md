@@ -14,6 +14,7 @@
     <ul>
         <li>Sign up and log in with their own accounts.</li>
         <li>View and update their personal details.</li>
+        <li>Notifications to inform students about their attendance status and course enrollment.</li>
     </ul>
  <h2>📌 Tech Stack Used</h2>
     <ul>
@@ -25,14 +26,20 @@
                  <li>🔹 Interfaces</li>             
             </ul>
         </li>
+        <li>🔹 <strong>SOLID Prnciples</strong> 
+            <ul>
+                 <li>🔹 SRP </li>
+            </ul>
+        </li>
         <li>🔹 <strong>LINQ</strong> </li>
         <li>🔹 <strong>SQL Database</strong> </li>
-        <li>🔹<strong>EF Core</strong>
+        <li>🔹 <strong>EF Core</strong>
              <ul>
                  <li>🔹 Fluent API and Grouping Configuration </li>
                  <li>🔹 Data Annotations </li>
                  <li>🔹 Mapping</li>
-                 <li>🔹 Migration (Code First) </li>             
+                 <li>🔹 Migration (Code First) </li>
+                 <li>🔹 partial view </li> 
             </ul>
         </li>
         <li>🔹<strong>MVC</strong>
