@@ -29,8 +29,8 @@ else
                       <tr>
                           <td scope="row">@student.Name</td>
                           <td>
-                              <a class="btn btn-outline-primary" asp-action="IsStudentPresent" asp-controller="Student" asp-route-stuid="@student.Id" asp-route-ispresent="@true" role="button" style="margin-right : 20px">Present</a>
-                              <a class="btn btn-outline-danger" asp-action="IsStudentPresent" asp-controller="Student" asp-route-stuid="@student.Id" asp-route-ispresent="@false" role="button" style="margin-right : 20px">Not Present</a>
+                            <a class="btn btn-outline-primary" asp-action="IsStudentPresent" asp-controller="Attendance" asp-route-stuid="@student.Id" asp-route-ispresent="@true" role="button" style="margin-right : 20px">Present</a>
+                            <a class="btn btn-outline-danger" asp-action="IsStudentPresent" asp-controller="Attendance" asp-route-stuid="@student.Id" asp-route-ispresent="@false" role="button" style="margin-right : 20px">Not Present</a>
                           </td>
                       </tr>
                   }

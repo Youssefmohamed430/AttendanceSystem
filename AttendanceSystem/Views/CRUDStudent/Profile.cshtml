@@ -9,7 +9,7 @@
 <h1>Profile</h1>
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="SaveUpdates" asp-route-id="@studentId">
+        <form asp-action="SaveUpdates" asp-route-id="@studentId" asp-controller="CRUDStudent">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             
             <div class="row">
@@ -83,7 +83,7 @@
 </table>
 <br />
 <br />
-<a class="btn btn-primary ms-auto" asp-action="Signout" asp-controller="Account" role="button">Sign out</a>
+<a class="btn btn-primary ms-auto" asp-action="Signout" asp-controller="AuthenticationService" role="button">Sign out</a>
 
 
 @section Scripts {

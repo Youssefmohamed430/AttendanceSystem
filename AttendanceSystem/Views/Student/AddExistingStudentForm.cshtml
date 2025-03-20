@@ -8,9 +8,9 @@
 </form>
 <br />
 
-@if(TempData?.Peek("Message")?.ToString() != null)
+@if(TempData["Message"]?.ToString() != null)
 {
-    <span class="text-danger">@TempData?.Peek("Message")?.ToString()</span>
+    <span class="text-danger">@TempData["Message"]?.ToString()</span>
 }
 @if(Model != null)
 {
@@ -29,7 +29,7 @@
                 <td>@Model.PhoneNumber</td>
                 <td>@Model.Email</td>
                 <td>
-                    <a class="btn btn-outline-success" asp-action="AddExistingStudent" asp-controller="Student" asp-route-stuid="@Model.Id" role="button" style="margin-right : 20px">Add</a>
+                    <a class="btn btn-outline-success" asp-action="AddExistingStudent" asp-controller="CRUDStudent" asp-route-stuid="@Model.Id" role="button" style="margin-right : 20px">Add</a>
                 </td>
             </tr>
         </tbody>

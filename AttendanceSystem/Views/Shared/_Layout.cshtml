@@ -31,7 +31,7 @@
                             if(User.IsInRole("Instructor"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Student" asp-action="GetStudentDetails">Students</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="CRUDStudent" asp-action="GetStudentDetails">Students</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Instructor" asp-action="AttendancePage">Attendance</a>
@@ -45,7 +45,7 @@
                                         <a class="nav-link text-dark" asp-area="" asp-controller="Student" asp-action="ShowStudentCoursesView">Search Student</a>
                                     </li>
                                 }
-                                <a class="btn btn-primary ms-auto" asp-action="Signout" asp-controller="Account" role="button">Sign out</a>
+                                <a class="btn btn-primary ms-auto" asp-action="Signout" asp-controller="AuthenticationService" role="button">Sign out</a>
                             }  
                             else
                             {
@@ -62,7 +62,7 @@
                                             </button>
                                             <partial name="_NotificationsPartialViiew" model="(List<Notification>)ViewBag.Notife" />
                                         </div>
-                                        <a class="btn btn-primary ms-auto" asp-action="Profile" asp-controller="Student" asp-route-Id="@studentId" role="button">
+                                        <a class="btn btn-primary ms-auto" asp-action="Profile" asp-controller="CRUDStudent" asp-route-Id="@studentId" role="button">
                                             <img src="~/imgs/profile-icon-9.png" class="img-fluid rounded-circle" style="width: 20px;" title="Profile">
                                         </a>
                                     }

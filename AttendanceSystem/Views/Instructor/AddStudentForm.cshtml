@@ -8,7 +8,7 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="AddStudent">
+        <form asp-action="AddStudent" asp-controller="CRUDStudent">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -41,7 +41,7 @@
             </div>
             <br/>
             <div class="form-group">
-                <input type="submit" value="Add" class="btn btn-primary" asp-action="AddStudent" asp-controller="Student"/>
+                <input type="submit" value="Add" class="btn btn-primary" asp-action="AddStudent" asp-controller="CRUDStudent"/>
             </div>
         </form>
     </div>

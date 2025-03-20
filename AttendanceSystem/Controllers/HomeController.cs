@@ -21,7 +21,7 @@ namespace AttendanceSystem.Controllers
         {
             if (!User.Identity.IsAuthenticated )
             {
-                return RedirectToAction("LogInForm", "Account");
+                return RedirectToAction("LogInForm", "AuthenticationService");
             }
             if (User.IsInRole("Student"))
             {

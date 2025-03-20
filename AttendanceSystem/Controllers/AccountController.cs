@@ -13,7 +13,6 @@ namespace AttendanceSystem.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         public readonly AppDbContext context;
-        //public readonly HomeController Home;
         public AccountController
             (AppDbContext _context,UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
@@ -21,39 +20,7 @@ namespace AttendanceSystem.Controllers
             this.signInManager = signInManager;
             this.context = _context;
         }
-        public IActionResult LogInForm()
-        {
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> LogInCheck(LogInViewModel loginmodel) 
-        {
-            if (ModelState.IsValid)
-            {
-                ApplicationUser? user = await userManager.FindByNameAsync(loginmodel.UserName);
-                if (user != null)
-                {
-                    bool found =
-                        await userManager.CheckPasswordAsync(user, loginmodel.Password);
-                    if (found)
-                    {
-                        var crsid = context?.Instructors?.FirstOrDefault(x => x.Id == user.Id)?.CrsId;
-                        await signInManager.SignInAsync(user, loginmodel.RememberMe);
-                        //if(User.IsInRole("Student"))
-                        //{
-                        //    var Notifications = context?.Notifications
-                        //        .Where(x => x.StudentId == user.Id)
-                        //        .ToList();
-
-                        //    return Home.Index(Notifications); 
-                        //}
-                        return RedirectToAction("Index", "Home");
-                    }
-                }
-                ModelState.AddModelError("", "Username or Password wrong");
-            }
-            return View("LogInForm", loginmodel);
-        }
+        
         public IActionResult SignInForm()
         {
             var courses = context?.Courses.ToList();
@@ -99,14 +66,7 @@ namespace AttendanceSystem.Controllers
             }
             return View("SignInForm", InstModel);
         }
-        public async Task<IActionResult> Signout()
-        {
-            await signInManager.SignOutAsync();
-
-            HttpContext.Session.Clear();
-
-            return RedirectToAction("LogInForm", "Account");
-        }
+       
 
     }
 }
